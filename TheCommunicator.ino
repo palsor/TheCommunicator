@@ -19,17 +19,13 @@ volatile DebugData* debugPtr;
 void setup()
 {
   comms.init();
-  //controller.init();
+  controller.init();
   
-  // have to send on master in, *slave out*
-  pinMode(MISO, OUTPUT);
-  
-  // turn on SPI in slave mode
-  SPCR |= _BV(SPE);
-
-  // now turn on interrupts
-  SPCR |= _BV(SPIE); 
-}  // end of setup
+  // setup spi 
+  pinMode(MISO, OUTPUT); // have to send on master in, *slave out*
+  SPCR |= _BV(SPE); // turn on SPI in slave mode
+  SPCR |= _BV(SPIE); // now turn on interrupts
+} 
 
 //
 // SPI interrupt routine
@@ -43,5 +39,5 @@ ISR (SPI_STC_vect)
 void loop()
 {
   comms.update();
-  //controller.update();
+  controller.update();
 } 

@@ -1,20 +1,14 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+#define RING_BUFF_SIZE 200
+
 #include <Arduino.h>
 #include <SPI.h>
 
 #include "Config.h"
 #include "Externs.h"
 #include "Structs.h"
-
-struct CommData {
-  SensorData sensorData;
-  NavData navData;
-  PilotData pilotData;
-  ErrorData errorData;
-  DebugData debugData;
-} __attribute__((packed));
 
 class Communication {
   public:
@@ -24,19 +18,29 @@ class Communication {
     void spiInterrupt();
     
   private:
-    volatile CommData* curStruct;
-    volatile byte* ptr;
-    volatile byte calcChecksum;
-    volatile int state;
-    volatile unsigned long goodChecksums;
-    volatile unsigned long badChecksums;
-    
-    unsigned long commTime;
-  
-    CommData* commDataA;
-    CommData* commDataB;
-    
+    void parseData();
     void resetState();
+    void writeByte(byte c);
+    
+    volatile byte* leadPtr;
+    volatile byte ringBuf[RING_BUFF_SIZE];
+    volatile boolean leadWrap;
+    byte* trailPtr;
+    
+    byte* writePtr;
+    byte* structEnd;
+    byte curStruct;
+    byte calcChecksum;
+    int state;
+    unsigned long commTime;
+    unsigned long goodChecksums;
+    unsigned long badChecksums;
+  
+    SensorData* sensorDataA;
+    NavData* navDataA;
+    PilotData* pilotDataA;
+    ErrorData* errorDataA;
+    DebugData* debugDataA;
 };
 
 #endif
