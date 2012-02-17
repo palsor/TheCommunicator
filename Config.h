@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 // output config
-#define SERIAL_RATE 9600
+#define SERIAL_RATE 57600
 #define COMM_RATE 1000
 
 // pins

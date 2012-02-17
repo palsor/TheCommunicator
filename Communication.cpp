@@ -45,6 +45,7 @@ void Communication::update() {
   if (curTime > commTime + COMM_RATE) {
     commTime = curTime;
     // print stuff here
+    
   }
 }
 
