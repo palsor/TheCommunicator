@@ -19,6 +19,8 @@ class Communication {
     
   private:
     void parseData();
+    void readRadioCmd();
+    void sendRadioData();
     void resetState();
     void writeByte(byte c);
     
@@ -35,6 +37,9 @@ class Communication {
     unsigned long commTime;
     unsigned long goodChecksums;
     unsigned long badChecksums;
+    int radioCmdStruct, radioCmdOffset, radioCmdType;
+    int tmpCmdStruct, tmpCmdOffset, tmpCmdType;
+    int cmdState;
   
     SensorData* sensorDataA;
     NavData* navDataA;

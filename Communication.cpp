@@ -29,6 +29,12 @@ void Communication::init() {
   state = 0;
   calcChecksum = 0;
   
+  commTime = 0; 
+  radioCmdStruct = 0;
+  radioCmdOffset = 0;
+  radioCmdType = 4;
+  cmdState = 0;
+  
   Serial.begin(SERIAL_RATE);
 }
 
@@ -36,21 +42,15 @@ void Communication::init() {
 // update - parse data input from SPI and send data output via radio
 //
 void Communication::update() {
-  
-  // parse the data in the ring buffer
+  // parse the data in the ring buffer from SPI
   parseData();
-  
   // send data out via radio
-  unsigned long curTime = millis();
-  if (curTime > commTime + COMM_RATE) {
-    commTime = curTime;
-    // print stuff here
-    
-  }
+  readRadioCmd();
+  sendRadioData();
 }
 
 //
-//
+// spiInterrupt - called when an SPI character shows up
 // 
 void Communication::spiInterrupt() {
   // add a new character into the ring buffer
@@ -195,4 +195,66 @@ void Communication::writeByte(byte c) {
 void Communication::resetState() {
   calcChecksum = 0;
   state = 0;  
+}
+
+//
+// readRadioCmd - reads any data from the radio and parses it
+//
+void Communication::readRadioCmd() {
+  while (Serial.available()) {
+    char c = Serial.read();
+    
+    if (cmdState == 0) {
+      tmpCmdStruct = c - 48;
+      cmdState = 1;
+    } else if (cmdState == 1) {
+      tmpCmdOffset = c - 48;
+      cmdState = 2;
+    } else if (cmdState == 2) {
+      tmpCmdType = c - 48;
+      cmdState = 0;
+      
+      radioCmdStruct = tmpCmdStruct;
+      radioCmdOffset = tmpCmdOffset;
+      radioCmdType = tmpCmdType;  
+    }
+  }
+}
+
+//
+// sendRadioData - sends data out through the radio
+//
+void Communication::sendRadioData () {
+  
+  unsigned long curTime = millis();
+  if (curTime > commTime + COMM_RATE) {
+    commTime = curTime;
+    
+    // print stuff here
+    byte* tempPtr;
+    
+    if (radioCmdStruct == SENSOR_DATA) {
+          tempPtr = (byte*)sensorPtr;
+    } else if (radioCmdStruct == NAV_DATA) {
+          tempPtr = (byte*)navPtr;
+    } else if (radioCmdStruct == ERROR_DATA) {
+          tempPtr = (byte*)errorPtr;
+    } else if (radioCmdStruct == DEBUG_DATA) {
+          tempPtr = (byte*)debugPtr;
+    } else if (radioCmdStruct == PILOT_DATA) {
+          tempPtr = (byte*)pilotPtr;
+    }
+    
+    tempPtr += radioCmdOffset;
+    
+    if (radioCmdType == 1) {
+      Serial.println(*(boolean*)tempPtr);  
+    } else if (radioCmdType == 2) {
+      Serial.println(*(int*)tempPtr); 
+    } else if (radioCmdType == 3) {
+      Serial.println(*(unsigned long*)tempPtr); 
+    } else if (radioCmdType == 4) {
+      Serial.println(*(float*)tempPtr, DEC); 
+    }
+  }
 }

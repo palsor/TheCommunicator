@@ -3,7 +3,7 @@
 
 // output config
 #define SERIAL_RATE 57600
-#define COMM_RATE 1000
+#define COMM_RATE 250
 
 // pins
 #define YAW_SERVO_PIN 9
