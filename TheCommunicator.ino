@@ -10,11 +10,11 @@
 Communication comms;
 Controller controller;
 
-volatile SensorData* sensorPtr;
-volatile NavData* navPtr;
-volatile PilotData* pilotPtr;
-volatile ErrorData* errorPtr;
-volatile DebugData* debugPtr;
+SensorData* sensorPtr;
+NavData* navPtr;
+PilotData* pilotPtr;
+ErrorData* errorPtr;
+DebugData* debugPtr;
 
 void setup()
 {

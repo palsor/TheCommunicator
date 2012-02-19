@@ -3,10 +3,10 @@
 
 #include "Structs.h"
 
-extern volatile SensorData* sensorPtr;
-extern volatile NavData* navPtr;
-extern volatile PilotData* pilotPtr;
-extern volatile ErrorData* errorPtr;
-extern volatile DebugData* debugPtr;
+extern SensorData* sensorPtr;
+extern NavData* navPtr;
+extern PilotData* pilotPtr;
+extern ErrorData* errorPtr;
+extern DebugData* debugPtr;
 
 #endif

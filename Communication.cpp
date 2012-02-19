@@ -32,6 +32,7 @@ void Communication::init() {
   commTime = 0; 
   radioCmdStruct = 0;
   radioCmdOffset = 0;
+  radioCmdMult = 0;
   radioCmdType = 4;
   cmdState = 0;
   
@@ -211,11 +212,15 @@ void Communication::readRadioCmd() {
       tmpCmdOffset = c - 48;
       cmdState = 2;
     } else if (cmdState == 2) {
+      tmpCmdMult = c - 48;
+      cmdState = 3;
+    } else if (cmdState == 3) {
       tmpCmdType = c - 48;
       cmdState = 0;
       
       radioCmdStruct = tmpCmdStruct;
       radioCmdOffset = tmpCmdOffset;
+      radioCmdMult = tmpCmdMult;
       radioCmdType = tmpCmdType;  
     }
   }
@@ -245,7 +250,7 @@ void Communication::sendRadioData () {
           tempPtr = (byte*)pilotPtr;
     }
     
-    tempPtr += radioCmdOffset;
+    tempPtr += radioCmdOffset * radioCmdMult;
     
     if (radioCmdType == 1) {
       Serial.println(*(boolean*)tempPtr);  

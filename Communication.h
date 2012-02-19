@@ -37,8 +37,8 @@ class Communication {
     unsigned long commTime;
     unsigned long goodChecksums;
     unsigned long badChecksums;
-    int radioCmdStruct, radioCmdOffset, radioCmdType;
-    int tmpCmdStruct, tmpCmdOffset, tmpCmdType;
+    int radioCmdStruct, radioCmdOffset, radioCmdMult, radioCmdType;
+    int tmpCmdStruct, tmpCmdOffset, tmpCmdMult, tmpCmdType;
     int cmdState;
   
     SensorData* sensorDataA;
