@@ -18,23 +18,28 @@ struct Vector {
 } __attribute__((packed));
 
 struct SensorData {
-  float magBearing;   
-  float gpsBearing;   
-  float gpsSpeed;       
-  Waypoint curLocation;
-  boolean gpsUpdated;
-  float hDliution;      
-  float vDilution;
-  unsigned long fixAge;
-  float pitch;   
-  float yaw;
-  float roll;
-  float gyroXRate;
-  float gyroYRate;
-  float gyroZRate;
-  float gpsAltitude;
-  float pressAltitude;
-  float airSpeed;
+  float magBearing;     // degrees  
+  float gpsBearing;     // degrees
+  float gpsSpeed;       // m/s       
+  Waypoint curLocation; // lat/long in degrees
+  float gpsHDOP;        // decimal
+  float gpsAltitude;    // meters
+  float pitch;          // degrees
+  float yaw;            // degrees
+  float roll;           // degrees
+  float gyroXRate;      // d/s
+  float gyroYRate;      // d/s
+  float gyroZRate;      // d/s
+  float accelX;         // m/s^2
+  float accelY;         // m/s^2
+  float accelZ;         // m/s^2
+  float pressAltitude;  // meters
+  float airSpeed;       // m/s
+  float battVoltage;    // volts
+  bool gpsUpdated;      // 1 = GPS data was updated, 0 = GPS was not updated
+  byte radioMuxSelect;  // 1 = radio, 0 = autopilot
+  byte gpsSatellites;   // number of satellites
+  byte gpsFixType;      // 1 = no fix, 2 = 2D, 3 = 3D
 } __attribute__((packed));
 
 struct NavData {
