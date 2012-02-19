@@ -13,10 +13,19 @@ class Controller {
     void update();  // send new signals to servos and motor
     
   private:
+    int lastThrottleValue;
+    int lastPitchValue;
+    int lastYawValue;
+    int lastRollValue;
     Servo throttleServo;
     Servo pitchServo;
     Servo yawServo;
     Servo rollServo;
+    void applyThrottleValue();  // applies throttleValue setting to throttle control hardware
+    void applyPitchValue();  // applies pitchValue setting to pitch control hardware
+    void applyYawValue();  // applies yawValue setting to yaw control hardware
+    void applyRollValue();  // applies rollValue setting to roll control hardware
+
 };
 
 #endif

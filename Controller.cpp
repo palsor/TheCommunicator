@@ -10,7 +10,11 @@ Controller::Controller() {}
 // creates hardware control objects and initializes to safe values
 //
 void Controller::init() {
-
+  lastThrottleValue = -1;
+  lastPitchValue = -1;
+  lastYawValue = -1;
+  lastRollValue = -1;
+  
   throttleServo.attach(THROTTLE_SERVO_PIN);
   throttleServo.write(0);  // init servo to 0
 
@@ -29,8 +33,45 @@ void Controller::init() {
 // send new signals to servos and motor
 //
 void Controller::update() {
-  //throttleServo.write(map(pilotPtr->throttleValue, 0, 99, 0, 359));
-  pitchServo.write(pilotPtr->pitchValue);
-  yawServo.write(pilotPtr->yawValue);
-  rollServo.write(pilotPtr->rollValue);
+  applyThrottleValue();
+  applyPitchValue();
+  applyYawValue();
+  applyRollValue();
 } 
+
+
+//
+// applies throttleValue setting to throttle control hardware
+//
+void Controller::applyThrottleValue() {
+//  throttleServo.write(map(pilotPtr->throttleValue,0,99,0,359));
+}
+
+
+//
+// applies pitchValue setting to pitch control hardware
+//
+void Controller::applyPitchValue() {
+//  pitchServo.write(pilotPtr->pitchValue);
+}
+
+
+//
+// applies yawValue setting to yaw control hardware
+//
+void Controller::applyYawValue() {
+  int angle = round(pilotPtr->yawValue);
+  if(angle != lastYawValue) { 
+    yawServo.write(angle);
+    lastYawValue = angle;
+  }
+}
+
+
+//
+// applies rollValue setting to roll control hardware
+//
+void Controller::applyRollValue() {
+//  rollServo.write(pilotPtr->rollValue);
+}
+
