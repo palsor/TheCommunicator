@@ -34,6 +34,8 @@ class Communication {
     byte curStruct;
     byte calcChecksum;
     int state;
+    int byteCount;
+    int length;
     unsigned long commTime;
     unsigned long goodChecksums;
     unsigned long badChecksums;

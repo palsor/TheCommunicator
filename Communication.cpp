@@ -28,6 +28,8 @@ void Communication::init() {
   
   state = 0;
   calcChecksum = 0;
+  byteCount = 0;
+  length = 0;
   
   commTime = 0; 
   radioCmdStruct = 0;
@@ -35,6 +37,7 @@ void Communication::init() {
   radioCmdMult = 0;
   radioCmdType = 4;
   cmdState = 0;
+  
   
   Serial.begin(SERIAL_RATE);
 }
@@ -107,23 +110,18 @@ void Communication::parseData() {
       curStruct = c;
       if (c == SENSOR_DATA) {
         writePtr = (byte*)sensorDataA;
-        structEnd = (byte*)sensorDataA + sizeof(SensorData);
+        length = sizeof(SensorData);
+        structEnd = (byte*)sensorDataA + length;
       }
       else if (c == NAV_DATA) {
         writePtr = (byte*)navDataA;
-        structEnd = (byte*)navDataA + sizeof(NavData);
-      }
-      else if (c == ERROR_DATA) {
-        writePtr = (byte*)errorDataA;
-        structEnd = (byte*)errorDataA + sizeof(ErrorData);
-      }
-      else if (c == DEBUG_DATA) {
-        writePtr = (byte*)debugDataA;
-        structEnd = (byte*)debugDataA + sizeof(DebugData);
+        length = sizeof(NavData);
+        structEnd = (byte*)navDataA + length;
       }
       else if (c == PILOT_DATA) {
         writePtr = (byte*)pilotDataA;
-        structEnd = (byte*)pilotDataA + sizeof(PilotData);
+        length = sizeof(PilotData);
+        structEnd = (byte*)pilotDataA + length;
       }
       else {
         state = 0; // something went wrong, reset
@@ -149,7 +147,7 @@ void Communication::parseData() {
     else if (state == 5)
     {    
       void* tempPtr;
-      if (c == calcChecksum) {
+      if ((c == calcChecksum) && (byteCount == length)) {
         // good checksum, flip pointers around
         if (curStruct == SENSOR_DATA) {
           tempPtr = (void*)sensorPtr;
@@ -159,14 +157,6 @@ void Communication::parseData() {
           tempPtr = (void*)navPtr;
           navPtr = navDataA;
           navDataA = (NavData*)tempPtr;
-        } else if (curStruct == ERROR_DATA) {
-          tempPtr = (void*)errorPtr;
-          errorPtr = errorDataA;
-          errorDataA = (ErrorData*)tempPtr;
-        } else if (curStruct == DEBUG_DATA) {
-          tempPtr = (void*)debugPtr;
-          debugPtr = debugDataA;
-          debugDataA = (DebugData*)tempPtr;
         } else if (curStruct == PILOT_DATA) {
           tempPtr = (void*)pilotPtr;
           pilotPtr = pilotDataA;
@@ -188,6 +178,7 @@ void Communication::writeByte(byte c) {
     *writePtr = c;
     writePtr++;
     calcChecksum += c;
+    byteCount++;
   } else {
     resetState();
   }
@@ -196,6 +187,7 @@ void Communication::writeByte(byte c) {
 void Communication::resetState() {
   calcChecksum = 0;
   state = 0;  
+  byteCount = 0;
 }
 
 //
