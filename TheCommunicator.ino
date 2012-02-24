@@ -13,8 +13,6 @@ Controller controller;
 SensorData* sensorPtr;
 NavData* navPtr;
 PilotData* pilotPtr;
-ErrorData* errorPtr;
-DebugData* debugPtr;
 
 void setup()
 {
@@ -38,6 +36,8 @@ ISR (SPI_STC_vect)
 // main loop - wait for flag set in interrupt routine
 void loop()
 {
-  comms.update();
+  comms.parseData();
   controller.update();
+  
+  comms.sendRadioData();
 } 

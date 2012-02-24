@@ -13,44 +13,22 @@ void Communication::init() {
   sensorDataA = (SensorData*)malloc(sizeof(SensorData));
   navDataA = (NavData*)malloc(sizeof(NavData));
   pilotDataA = (PilotData*)malloc(sizeof(PilotData));
-  errorDataA = (ErrorData*)malloc(sizeof(ErrorData));
-  debugDataA = (DebugData*)malloc(sizeof(DebugData));
     
   sensorPtr = (SensorData*)malloc(sizeof(SensorData));
   navPtr = (NavData*)malloc(sizeof(NavData));
   pilotPtr = (PilotData*)malloc(sizeof(PilotData));
-  errorPtr = (ErrorData*)malloc(sizeof(ErrorData));
-  debugPtr = (DebugData*)malloc(sizeof(DebugData));
   
   leadPtr = ringBuf;
   trailPtr = (byte*)ringBuf;
   leadWrap = false;
+  ringBuffOverflow = false;
   
   state = 0;
   calcChecksum = 0;
   byteCount = 0;
   length = 0;
   
-  commTime = 0; 
-  radioCmdStruct = 0;
-  radioCmdOffset = 0;
-  radioCmdMult = 0;
-  radioCmdType = 4;
-  cmdState = 0;
-  
-  
   Serial.begin(SERIAL_RATE);
-}
-
-//
-// update - parse data input from SPI and send data output via radio
-//
-void Communication::update() {
-  // parse the data in the ring buffer from SPI
-  parseData();
-  // send data out via radio
-  readRadioCmd();
-  sendRadioData();
 }
 
 //
@@ -67,6 +45,10 @@ void Communication::spiInterrupt() {
     leadPtr = ringBuf;
     leadWrap = true;
   }
+  
+  // check to see if we caught up with the trailing ptr
+  if (leadPtr == trailPtr)
+    ringBuffOverflow = true;
 }
   
 //
@@ -111,17 +93,14 @@ void Communication::parseData() {
       if (c == SENSOR_DATA) {
         writePtr = (byte*)sensorDataA;
         length = sizeof(SensorData);
-        structEnd = (byte*)sensorDataA + length;
       }
       else if (c == NAV_DATA) {
         writePtr = (byte*)navDataA;
         length = sizeof(NavData);
-        structEnd = (byte*)navDataA + length;
       }
       else if (c == PILOT_DATA) {
         writePtr = (byte*)pilotDataA;
         length = sizeof(PilotData);
-        structEnd = (byte*)pilotDataA + length;
       }
       else {
         state = 0; // something went wrong, reset
@@ -174,9 +153,8 @@ void Communication::parseData() {
 } 
   
 void Communication::writeByte(byte c) {
-  if (writePtr < structEnd) {
-    *writePtr = c;
-    writePtr++;
+  if (byteCount <= length) {
+    *(writePtr + byteCount) = c;
     calcChecksum += c;
     byteCount++;
   } else {
@@ -191,67 +169,8 @@ void Communication::resetState() {
 }
 
 //
-// readRadioCmd - reads any data from the radio and parses it
-//
-void Communication::readRadioCmd() {
-  while (Serial.available()) {
-    char c = Serial.read();
-    
-    if (cmdState == 0) {
-      tmpCmdStruct = c - 48;
-      cmdState = 1;
-    } else if (cmdState == 1) {
-      tmpCmdOffset = c - 48;
-      cmdState = 2;
-    } else if (cmdState == 2) {
-      tmpCmdMult = c - 48;
-      cmdState = 3;
-    } else if (cmdState == 3) {
-      tmpCmdType = c - 48;
-      cmdState = 0;
-      
-      radioCmdStruct = tmpCmdStruct;
-      radioCmdOffset = tmpCmdOffset;
-      radioCmdMult = tmpCmdMult;
-      radioCmdType = tmpCmdType;  
-    }
-  }
-}
-
-//
 // sendRadioData - sends data out through the radio
 //
 void Communication::sendRadioData () {
   
-  unsigned long curTime = millis();
-  if (curTime > commTime + COMM_RATE) {
-    commTime = curTime;
-    
-    // print stuff here
-    byte* tempPtr;
-    
-    if (radioCmdStruct == SENSOR_DATA) {
-          tempPtr = (byte*)sensorPtr;
-    } else if (radioCmdStruct == NAV_DATA) {
-          tempPtr = (byte*)navPtr;
-    } else if (radioCmdStruct == ERROR_DATA) {
-          tempPtr = (byte*)errorPtr;
-    } else if (radioCmdStruct == DEBUG_DATA) {
-          tempPtr = (byte*)debugPtr;
-    } else if (radioCmdStruct == PILOT_DATA) {
-          tempPtr = (byte*)pilotPtr;
-    }
-    
-    tempPtr += radioCmdOffset * radioCmdMult;
-    
-    if (radioCmdType == 1) {
-      Serial.println(*(boolean*)tempPtr);  
-    } else if (radioCmdType == 2) {
-      Serial.println(*(int*)tempPtr); 
-    } else if (radioCmdType == 3) {
-      Serial.println(*(unsigned long*)tempPtr); 
-    } else if (radioCmdType == 4) {
-      Serial.println(*(float*)tempPtr, DEC); 
-    }
-  }
 }
