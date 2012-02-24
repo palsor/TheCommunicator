@@ -26,7 +26,6 @@ class Communication {
     volatile byte ringBuf[RING_BUFF_SIZE];
     volatile boolean leadWrap;
     volatile boolean ringBuffOverflow;
-    volatile unsigned long recTimestamp;
     byte* trailPtr;
     
     byte* writePtr;

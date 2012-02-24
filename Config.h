@@ -3,7 +3,10 @@
 
 // output config
 #define SERIAL_RATE 57600 // baud
-#define SPI_TX_TIME 15 // us
+
+// comm protocols
+#define SPI_HEADER 0xAA
+#define SPI_FOOTER 0x55
 
 // pins
 #define YAW_SERVO_PIN 9

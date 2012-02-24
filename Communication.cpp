@@ -21,7 +21,6 @@ void Communication::init() {
   leadPtr = ringBuf;
   trailPtr = (byte*)ringBuf;
   leadWrap = false;
-  recTimestamp = 0;
   ringBuffOverflow = false;
   
   state = 0;
@@ -50,9 +49,6 @@ void Communication::spiInterrupt() {
   // check to see if we caught up with the trailing ptr
   if (leadPtr == trailPtr)
     ringBuffOverflow = true;
-    
-  // update our timestamp so we know the last time we got a character
-  recTimestamp = micros();
 }
   
 //
@@ -82,11 +78,11 @@ void Communication::parseData() {
     //
    
     if (state == 0) {
-      if (c == 0xAA)
+      if (c == SPI_HEADER)
         state = 1;
     } 
     else if (state == 1) {
-      if (c == 0xAA)
+      if (c == SPI_HEADER)
         state = 2;
       else
         state = 0;
@@ -111,18 +107,18 @@ void Communication::parseData() {
       }  
     }
     else if (state == 3) {
-      if (c == 0x55)
+      if (c == SPI_FOOTER)
         state = 4;
       else {
         writeByte(c);
       }
     } 
     else if (state == 4) {
-      if (c == 0x55) {
+      if (c == SPI_FOOTER) {
         state = 5;
       }
       else {
-        writeByte(0x55);
+        writeByte(SPI_FOOTER);
         writeByte(c);
         state = 3;
       }
@@ -176,7 +172,5 @@ void Communication::resetState() {
 // sendRadioData - sends data out through the radio
 //
 void Communication::sendRadioData () {
-  if (micros() > recTimestamp + SPI_TX_TIME) {
-    // send one byte  
-  }
+
 }
