@@ -21,6 +21,7 @@ void Communication::init() {
   leadPtr = ringBuf;
   trailPtr = (byte*)ringBuf;
   leadWrap = false;
+  recTimestamp = 0;
   ringBuffOverflow = false;
   
   state = 0;
@@ -49,6 +50,9 @@ void Communication::spiInterrupt() {
   // check to see if we caught up with the trailing ptr
   if (leadPtr == trailPtr)
     ringBuffOverflow = true;
+    
+  // update our timestamp so we know the last time we got a character
+  recTimestamp = micros();
 }
   
 //
@@ -172,5 +176,7 @@ void Communication::resetState() {
 // sendRadioData - sends data out through the radio
 //
 void Communication::sendRadioData () {
-  
+  if (micros() > recTimestamp + SPI_TX_TIME) {
+    // send one byte  
+  }
 }

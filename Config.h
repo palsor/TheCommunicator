@@ -2,8 +2,8 @@
 #define CONFIG_H
 
 // output config
-#define SERIAL_RATE 57600
-#define COMM_RATE 250
+#define SERIAL_RATE 57600 // baud
+#define SPI_TX_TIME 15 // us
 
 // pins
 #define YAW_SERVO_PIN 9

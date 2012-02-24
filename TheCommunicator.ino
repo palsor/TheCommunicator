@@ -38,6 +38,5 @@ void loop()
 {
   comms.parseData();
   controller.update();
-  
   comms.sendRadioData();
 } 
