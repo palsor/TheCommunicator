@@ -19,13 +19,13 @@ void Controller::init() {
   throttleServo.write(0);  // init servo to 0
 
   pitchServo.attach(PITCH_SERVO_PIN);
-  pitchServo.write(0);  // init servo to 0
+  pitchServo.write(PITCH_CENTER_ANGLE);  // init servo to 0
 
   yawServo.attach(YAW_SERVO_PIN);
   yawServo.write(YAW_CENTER_ANGLE);  // init servo to mechanical center
 
   rollServo.attach(ROLL_SERVO_PIN);
-  rollServo.write(0);  // init servo to 0
+  rollServo.write(ROLL_CENTER_ANGLE);  // init servo to 0
 } 
 
 
