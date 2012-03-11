@@ -23,6 +23,8 @@ void setup()
   pinMode(MISO, OUTPUT); // have to send on master in, *slave out*
   SPCR |= _BV(SPE); // turn on SPI in slave mode
   SPCR |= _BV(SPIE); // now turn on interrupts
+  pinMode(SPI_SLAVE_ACK_PIN, OUTPUT);  // ack pin back to master
+  digitalWrite(SPI_SLAVE_ACK_PIN, HIGH);  // initial state for ack (toggle based)
 } 
 
 //

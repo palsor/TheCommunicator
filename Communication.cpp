@@ -9,6 +9,9 @@ Communication::Communication() {}
 // init
 //
 void Communication::init() {
+  ackPinState = true;
+  slowStructToTrans = SENSOR_DATA;
+  medStructToTrans = DEBUG_DATA;
   
   sensorDataA = (SensorData*)malloc(sizeof(SensorData));
   navDataA = (NavData*)malloc(sizeof(NavData));
@@ -28,6 +31,10 @@ void Communication::init() {
   byteCount = 0;
   length = 0;
   
+  lastFastXmtTime = millis();
+  lastMedXmtTime = millis();
+  lastSlowXmtTime = millis();
+  
   Serial.begin(SERIAL_RATE);
 }
 
@@ -37,6 +44,15 @@ void Communication::init() {
 void Communication::spiInterrupt() {
   // add a new character into the ring buffer
   *leadPtr = SPDR;
+
+  // toggle ack pin
+  if(ackPinState == true) {
+    digitalWrite(SPI_SLAVE_ACK_PIN, LOW);
+    ackPinState = false;
+  } else {  
+    digitalWrite(SPI_SLAVE_ACK_PIN, HIGH);
+    ackPinState = true;
+  }
   
   // move the lead pointer
   if (leadPtr < ringBuf + RING_BUFF_SIZE - 1)
@@ -172,5 +188,71 @@ void Communication::resetState() {
 // sendRadioData - sends data out through the radio
 //
 void Communication::sendRadioData () {
+  unsigned long curTime = millis();
 
+
+  // Fast throttled transmit loop
+  if (curTime - lastFastXmtTime > FAST_SERIAL_XMT_INTERVAL) {
+    lastFastXmtTime = curTime;
+  
+    // fast xmt data here
+    transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
+  }
+  
+  // Medium throttled transmit loop
+  if (curTime - lastMedXmtTime > MED_SERIAL_XMT_INTERVAL) {
+    lastMedXmtTime = curTime;
+      
+    // medium xmt data here
+    switch(medStructToTrans) {
+
+      case SENSOR_DATA:
+        transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
+        medStructToTrans = NAV_DATA;
+        break;
+      
+      case NAV_DATA:
+        transmitStruct(NAV_DATA, (byte*)navPtr, sizeof(NavData));
+        medStructToTrans = SENSOR_DATA;
+        break;
+      
+      default:
+        medStructToTrans = SENSOR_DATA;
+        break;
+    }
+  }  
+  
+  // Slow throttled transmit loop
+//  if (curTime - lastSlowXmtTime > SLOW_SERIAL_XMT_INTERVAL) {
+//    lastSlowXmtTime = curTime;
+//      
+//    // slow xmt data here
+//    switch(slowStructToTrans) {
+//
+//      case DEBUG_DATA:
+//        transmitStruct(DEBUG_DATA, (byte*)debugPtr, sizeof(DebugData));
+//        slowStructToTrans = ERROR_DATA;
+//        break;
+//      
+//      case ERROR_DATA:
+//        transmitStruct(ERROR_DATA, (byte*)errorPtr, sizeof(ErrorData));
+//        slowStructToTrans = DEBUG_DATA;
+//        break;
+//      
+//      default:
+//        slowStructToTrans = DEBUG_DATA;
+//        break;
+//    }
+//  }  
+}
+
+//
+// transmitStruct - sends a whole struct to the radio
+//
+void Communication::transmitStruct(byte id, byte* ptr, int length) {
+  Serial.print(id,DEC);
+  for (byte* temp = ptr; temp < ptr + length; temp++) {
+    Serial.print(*temp,HEX);
+  }
+  Serial.print("\n");
 }

@@ -21,6 +21,7 @@ class Communication {
   private:
     void resetState();
     void writeByte(byte c);
+    void transmitStruct(byte id, byte* ptr, int length);
     
     volatile byte* leadPtr;
     volatile byte ringBuf[RING_BUFF_SIZE];
@@ -40,6 +41,13 @@ class Communication {
     SensorData* sensorDataA;
     NavData* navDataA;
     PilotData* pilotDataA;
+    
+    int slowStructToTrans;
+    int medStructToTrans;
+    volatile boolean ackPinState;
+    unsigned long lastFastXmtTime;
+    unsigned long lastMedXmtTime;
+    unsigned long lastSlowXmtTime;
 };
 
 #endif
