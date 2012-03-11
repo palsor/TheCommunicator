@@ -17,6 +17,7 @@
 #define ROLL_SERVO_PIN 5
 #define THROTTLE_SERVO_PIN 3
 #define SPI_SLAVE_ACK_PIN 8
+#define SPI_SS_PIN 10
 
 // mechanical controls
 #define PITCH_CENTER_ANGLE 90  // approximate steering on-center angle for servo
