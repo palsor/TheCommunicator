@@ -54,6 +54,8 @@ void Communication::spiInterrupt() {
     ackPinState = true;
   }
   
+  SPDR = SPDR ^ 0xFF;  // xor data back to master
+  
   // move the lead pointer
   if (leadPtr < ringBuf + RING_BUFF_SIZE - 1)
     leadPtr++;
@@ -196,7 +198,7 @@ void Communication::sendRadioData () {
     lastFastXmtTime = curTime;
   
     // fast xmt data here
-//    transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
+    transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
   }
   
   // Medium throttled transmit loop
@@ -207,13 +209,12 @@ void Communication::sendRadioData () {
     switch(medStructToTrans) {
 
       case SENSOR_DATA:
-//        transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
-        Serial.println(sensorPtr->yaw,DEC);
+        transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
         medStructToTrans = NAV_DATA;
         break;
       
       case NAV_DATA:
-//        transmitStruct(NAV_DATA, (byte*)navPtr, sizeof(NavData));
+        transmitStruct(NAV_DATA, (byte*)navPtr, sizeof(NavData));
         medStructToTrans = SENSOR_DATA;
         break;
       

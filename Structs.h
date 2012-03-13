@@ -6,6 +6,7 @@
 #define ERROR_DATA 2
 #define DEBUG_DATA 3
 #define PILOT_DATA 4
+#define CAPT_DATA 5
 
 struct Waypoint {
   float latitude;
@@ -28,12 +29,18 @@ struct SensorData {
   float yaw;            // degrees in earth's frame of reference
   float roll;           // degrees in earth's frame of reference
   float pressAltitude;  // meters
-  float airSpeed[3];    // m/s
+  float airspeed[3];    // m/s
   float battVoltage;    // volts
   bool gpsUpdated;      // 1 = GPS data was updated, 0 = GPS was not updated
   byte radioMuxSelect;  // 1 = radio, 0 = autopilot
   byte gpsSatellites;   // number of satellites
   byte gpsFixType;      // 1 = no fix, 2 = 2D, 3 = 3D
+} __attribute__((packed));
+
+struct CaptData {
+  int curState;  // current state of navigation state machine
+  int prevState;  // previous state of navigation state machine
+  unsigned long lastStateTransitionTime;  // last navigator state transition time
 } __attribute__((packed));
 
 struct NavData {
@@ -49,9 +56,6 @@ struct NavData {
   Vector curAirSpeed;  // created from airspeed/magBearing
   Vector curWindSpeed;  // calculated from curGroundSpeed - curAirSpeed
   Vector targetAirSpeed;  // calculated desired heading in plane reference with normalized speed
-  float deltaAirSpeed;  // speed change fed to Pilot
-  float deltaAltitude;  // altitude change fed to Pilot
-  float deltaBearing;  // bearing change fed to Pilot
 } __attribute__((packed));
 
 struct PilotData {
@@ -81,6 +85,8 @@ struct DebugData {
   unsigned long navWorstCaseDelayTime;
   unsigned long navWorstCaseRunTime;
   unsigned long averageSerialTime;
+  unsigned long spiXmtCount;
+  unsigned long spiXmtErrorCount;
 } __attribute__((packed));
 
 #endif
