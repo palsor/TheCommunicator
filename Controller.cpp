@@ -44,7 +44,7 @@ void Controller::update() {
 // applies throttleValue setting to throttle control hardware
 //
 void Controller::applyThrottleValue() {
-//  throttleServo.write(map(pilotPtr->throttleValue,0,99,0,359));
+  throttleServo.write(map(pilotPtr->throttleValue,0,99,0,359));
 }
 
 
@@ -52,7 +52,11 @@ void Controller::applyThrottleValue() {
 // applies pitchValue setting to pitch control hardware
 //
 void Controller::applyPitchValue() {
-//  pitchServo.write(pilotPtr->pitchValue);
+  int angle = round(pilotPtr->pitchValue);
+  if(angle != lastPitchValue) { 
+    pitchServo.write(angle);
+    lastPitchValue = angle;
+  }
 }
 
 
@@ -72,6 +76,10 @@ void Controller::applyYawValue() {
 // applies rollValue setting to roll control hardware
 //
 void Controller::applyRollValue() {
-//  rollServo.write(pilotPtr->rollValue);
+  int angle = round(pilotPtr->rollValue);
+  if(angle != lastRollValue) { 
+    rollServo.write(angle);
+    lastRollValue = angle;
+  }
 }
 
