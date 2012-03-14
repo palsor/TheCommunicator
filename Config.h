@@ -1,6 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// input config
+#define GOOD_CHECKSUM_TIMEOUT 500  // ms
+
 // output config
 #define SERIAL_RATE 57600 // baud
 #define FAST_SERIAL_XMT_INTERVAL 100  // ms

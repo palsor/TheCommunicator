@@ -40,6 +40,16 @@ ISR (SPI_STC_vect)
 void loop()
 {
   comms.parseData();
-  controller.update();
+  
+  // prevent garbage data from going to servos until valid data starts coming in from master
+  if(comms.goodChecksums > 10) {
+    controller.update();
+  }
+  
   comms.sendRadioData();
+  
+  if (millis() - comms.lastGoodChecksumTime > GOOD_CHECKSUM_TIMEOUT) {
+    // BAD, no good structs received longer than timeout threshold
+    // reset IMU?
+  }
 } 

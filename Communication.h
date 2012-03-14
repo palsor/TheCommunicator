@@ -17,6 +17,8 @@ class Communication {
     void parseData();
     void sendRadioData();
     void spiInterrupt();
+    unsigned long lastGoodChecksumTime;
+    unsigned long goodChecksums;
     
   private:
     void resetState();
@@ -35,7 +37,6 @@ class Communication {
     int state;
     int byteCount;
     int length;
-    unsigned long goodChecksums;
     unsigned long badChecksums;
   
     SensorData* sensorDataA;

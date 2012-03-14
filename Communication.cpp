@@ -35,6 +35,8 @@ void Communication::init() {
   lastMedXmtTime = millis();
   lastSlowXmtTime = millis();
   
+  lastGoodChecksumTime = 0;
+  
   Serial.begin(SERIAL_RATE);
 }
 
@@ -160,6 +162,7 @@ void Communication::parseData() {
           pilotDataA = (PilotData*)tempPtr;
         }
         goodChecksums++;
+        lastGoodChecksumTime = millis();
       } else {
         badChecksums++;  
       }

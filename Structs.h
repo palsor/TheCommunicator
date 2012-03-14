@@ -44,9 +44,7 @@ struct CaptData {
 } __attribute__((packed));
 
 struct NavData {
-  int curNavState;  // current state of navigation state machine
-  int prevNavState;  // previous state of navigation state machine
-  unsigned long lastStateTransitionTime;  // last navigator state transition time
+  int maxValidCourseIdx;  // max valid index of waypoints & courseDistances    
   unsigned long lastUpdateTime;  // last navigator update loop time
   Waypoint estLocation;  // estimated location updated between GPS fixes
   Vector curDistance;  // calculated distance/bearing to next waypoint
@@ -71,6 +69,7 @@ struct ErrorData {
 } __attribute__((packed));
 
 struct DebugData {
+  boolean linkTestSuccess;
   unsigned long gpsParseErrors;
   unsigned long gpsSentences;
   unsigned long mainLoopIterations;
