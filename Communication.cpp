@@ -255,9 +255,15 @@ void Communication::sendRadioData () {
 // transmitStruct - sends a whole struct to the radio
 //
 void Communication::transmitStruct(byte id, byte* ptr, int length) {
-  Serial.print(id,DEC);
+  byte checksum = 0;
+  Serial.write(0xAA);
+  Serial.write(0xAA);
+  Serial.write(id);
   for (byte* temp = ptr; temp < ptr + length; temp++) {
-    Serial.print(*temp,HEX);
+    Serial.write(*temp);
+    checksum+=*temp;
   }
-  Serial.print("\n");
+  Serial.write(0x55);
+  Serial.write(0x55);
+  Serial.write(checksum);
 }
