@@ -201,7 +201,7 @@ void Communication::sendRadioData () {
     lastFastXmtTime = curTime;
   
     // fast xmt data here
-    transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
+    transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
   }
   
   // Medium throttled transmit loop
@@ -211,18 +211,18 @@ void Communication::sendRadioData () {
     // medium xmt data here
     switch(medStructToTrans) {
 
-      case SENSOR_DATA:
-        transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
+      case PILOT_DATA:
+        transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
         medStructToTrans = NAV_DATA;
         break;
       
       case NAV_DATA:
         transmitStruct(NAV_DATA, (byte*)navPtr, sizeof(NavData));
-        medStructToTrans = SENSOR_DATA;
+        medStructToTrans = PILOT_DATA;
         break;
       
       default:
-        medStructToTrans = SENSOR_DATA;
+        medStructToTrans = PILOT_DATA;
         break;
     }
   }  
