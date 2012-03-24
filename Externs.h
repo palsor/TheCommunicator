@@ -6,5 +6,6 @@
 extern SensorData* sensorPtr;
 extern NavData* navPtr;
 extern PilotData* pilotPtr;
+extern CaptData* captPtr;
 
 #endif

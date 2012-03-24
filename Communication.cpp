@@ -10,16 +10,19 @@ Communication::Communication() {}
 //
 void Communication::init() {
   ackPinState = true;
-  slowStructToTrans = SENSOR_DATA;
-  medStructToTrans = DEBUG_DATA;
+  slowStructToTrans = CAPT_DATA;
+  medStructToTrans = PILOT_DATA;
+  fastStructToTrans = SENSOR_DATA;
   
   sensorDataA = (SensorData*)malloc(sizeof(SensorData));
   navDataA = (NavData*)malloc(sizeof(NavData));
   pilotDataA = (PilotData*)malloc(sizeof(PilotData));
+  captDataA = (CaptData*)malloc(sizeof(CaptData));
     
   sensorPtr = (SensorData*)malloc(sizeof(SensorData));
   navPtr = (NavData*)malloc(sizeof(NavData));
   pilotPtr = (PilotData*)malloc(sizeof(PilotData));
+  captPtr = (CaptData*)malloc(sizeof(CaptData));
   
   leadPtr = ringBuf;
   trailPtr = (byte*)ringBuf;
@@ -35,6 +38,8 @@ void Communication::init() {
   lastMedXmtTime = millis();
   lastSlowXmtTime = millis();
   
+  goodChecksums = 0;
+  badChecksums = 0;
   lastGoodChecksumTime = 0;
   
   Serial.begin(SERIAL_RATE);
@@ -122,6 +127,10 @@ void Communication::parseData() {
         writePtr = (byte*)pilotDataA;
         length = sizeof(PilotData);
       }
+      else if (c == CAPT_DATA) {
+        writePtr = (byte*)captDataA;
+        length = sizeof(CaptData);
+      }
       else {
         state = 0; // something went wrong, reset
       }  
@@ -160,6 +169,10 @@ void Communication::parseData() {
           tempPtr = (void*)pilotPtr;
           pilotPtr = pilotDataA;
           pilotDataA = (PilotData*)tempPtr;
+        }  else if (curStruct == CAPT_DATA) {
+          tempPtr = (void*)captPtr;
+          captPtr = captDataA;
+          captDataA = (CaptData*)tempPtr;
         }
         goodChecksums++;
         lastGoodChecksumTime = millis();
@@ -228,12 +241,12 @@ void Communication::sendRadioData () {
   }  
   
   // Slow throttled transmit loop
-//  if (curTime - lastSlowXmtTime > SLOW_SERIAL_XMT_INTERVAL) {
-//    lastSlowXmtTime = curTime;
-//      
-//    // slow xmt data here
-//    switch(slowStructToTrans) {
-//
+  if (curTime - lastSlowXmtTime > SLOW_SERIAL_XMT_INTERVAL) {
+    lastSlowXmtTime = curTime;
+      
+    // slow xmt data here
+    switch(slowStructToTrans) {
+
 //      case DEBUG_DATA:
 //        transmitStruct(DEBUG_DATA, (byte*)debugPtr, sizeof(DebugData));
 //        slowStructToTrans = ERROR_DATA;
@@ -243,12 +256,18 @@ void Communication::sendRadioData () {
 //        transmitStruct(ERROR_DATA, (byte*)errorPtr, sizeof(ErrorData));
 //        slowStructToTrans = DEBUG_DATA;
 //        break;
-//      
-//      default:
-//        slowStructToTrans = DEBUG_DATA;
-//        break;
-//    }
-//  }  
+
+      case CAPT_DATA:
+        transmitStruct(CAPT_DATA, (byte*)captPtr, sizeof(CaptData));
+        slowStructToTrans = CAPT_DATA;
+        break;
+      
+      default:
+        transmitStruct(CAPT_DATA, (byte*)captPtr, sizeof(CaptData));
+        slowStructToTrans = CAPT_DATA;
+        break;
+    }
+  }  
 }
 
 //

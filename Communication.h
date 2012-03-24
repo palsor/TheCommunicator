@@ -42,9 +42,11 @@ class Communication {
     SensorData* sensorDataA;
     NavData* navDataA;
     PilotData* pilotDataA;
+    CaptData* captDataA;
     
     int slowStructToTrans;
     int medStructToTrans;
+    int fastStructToTrans;
     volatile boolean ackPinState;
     unsigned long lastFastXmtTime;
     unsigned long lastMedXmtTime;

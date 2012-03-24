@@ -13,6 +13,7 @@ Controller controller;
 SensorData* sensorPtr;
 NavData* navPtr;
 PilotData* pilotPtr;
+CaptData* captPtr;
 
 void setup()
 {

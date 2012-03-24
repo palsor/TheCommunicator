@@ -252,7 +252,10 @@ sub printBoolean() {
 
 sub printInt () {
 	my $hexString = $_[0];
-	return(hex $hexString);
+	#return(hex $hexString);
+	#$hexString = "0000" . $hexString;
+	my $int = unpack "s", pack "H*", $hexString;
+	return($int);
 }
 
 
@@ -268,7 +271,7 @@ sub printFloat () {
 	my $hexString = $_[0];
 	my $precision = $_[1];
 	
-	my $float = unpack "f",         pack "H*", $hexString;
+	my $float = unpack "f", pack "H*", $hexString;
 	if(($precision == 0) && ($float =~ /(\-?[0-9]+)\.([0-9]*)/)) {
 		my $int = $1;
 		my $dec = $2;

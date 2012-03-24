@@ -8,7 +8,7 @@
 #define SERIAL_RATE 57600 // baud
 #define FAST_SERIAL_XMT_INTERVAL 100  // ms
 #define MED_SERIAL_XMT_INTERVAL 500  // ms
-#define SLOW_SERIAL_XMT_INTERVAL 100000  // ms
+#define SLOW_SERIAL_XMT_INTERVAL 5000  // ms
 
 // comm protocols
 #define SPI_HEADER 0xAA
