@@ -246,14 +246,14 @@ sub printByte() {
 sub printBoolean() {
 	my $hexString = $_[0];
 	$hexString = "00" . $hexString;
-	return(printInt($hexString));
+	my $bool = unpack "S", pack "H*", $hexString;
+	return($bool);
 }
 
 
 sub printInt () {
 	my $hexString = $_[0];
-	#return(hex $hexString);
-	#$hexString = "0000" . $hexString;
+
 	my $int = unpack "s", pack "H*", $hexString;
 	return($int);
 }
