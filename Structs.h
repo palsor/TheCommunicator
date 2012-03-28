@@ -18,19 +18,18 @@ struct Vector {  // V
   float magnitude;  // mag:2
 } __attribute__((packed));
 
-struct SensorData {
-  float magBearing;     // Mb degrees  
+struct SensorData {  
   float gpsBearing;     // Gb degrees
   float gpsSpeed;       // Gs m/s       
   Waypoint curLocation; // cl lat/long in degrees
   float gpsHDOP;        // Gerr decimal
   float gpsAltitude;    // Galt meters
-  float pitch;          // P degrees in earth's frame of reference
-  float yaw;            // Y degrees in earth's frame of reference
-  float roll;           // R degrees in earth's frame of reference
+  float pitch_e;        // P degrees in earth's frame of reference
+  float yaw_e;          // Y degrees in earth's frame of reference
+  float roll_e;         // R degrees in earth's frame of reference
   float pressAltitude;  // Palt meters
-  float airspeed[3];    // AS m/s
-  float gyro[3];        // rotation about each axis in plane's frame of reference
+  float airspeed_e[3];  // AS m/s in earth's frame of reference
+  float gyro_b[3];      // rotation about each axis in body's frame of reference
   float battVoltage;    // V volts
   bool gpsUpdated;      // Gu 1 = GPS data was updated, 0 = GPS was not updated
   byte radioMuxSelect;  // Mx 1 = radio, 0 = autopilot

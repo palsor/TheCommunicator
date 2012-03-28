@@ -49,10 +49,10 @@ void Controller::applyThrottleValue() {
 
 
 //
-// applies pitchValue setting to pitch control hardware
+// applies elevatorAngle setting to pitch control hardware
 //
 void Controller::applyPitchValue() {
-  int angle = round(pilotPtr->pitchValue);
+  int angle = round(pilotPtr->elevatorAngle);
   if(angle != lastPitchValue) { 
     pitchServo.write(angle);
     lastPitchValue = angle;
@@ -61,10 +61,10 @@ void Controller::applyPitchValue() {
 
 
 //
-// applies yawValue setting to yaw control hardware
+// applies rudderAngle setting to yaw control hardware
 //
 void Controller::applyYawValue() {
-  int angle = round(pilotPtr->yawValue);
+  int angle = round(pilotPtr->rudderAngle);
   if(angle != lastYawValue) { 
     yawServo.write(angle);
     lastYawValue = angle;
@@ -73,10 +73,10 @@ void Controller::applyYawValue() {
 
 
 //
-// applies rollValue setting to roll control hardware
+// applies aileronAngle setting to roll control hardware
 //
 void Controller::applyRollValue() {
-  int angle = round(pilotPtr->rollValue);
+  int angle = round(pilotPtr->aileronAngle);
   if(angle != lastRollValue) { 
     rollServo.write(angle);
     lastRollValue = angle;
