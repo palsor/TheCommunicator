@@ -61,6 +61,7 @@ struct PilotData {
   float elevatorAngle;  // Elv itch value sent to controller (0-360 degrees)
   float rudderAngle;  // Rud yaw value sent to controller (0-360 degrees)
   float aileronAngle;  // Ail roll value sent to controller (0-360 degrees)
+  float adaptivePitchTrim;  // apt adaptive pitch trim value
 } __attribute__((packed));
 
 struct ErrorData {
