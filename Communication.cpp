@@ -11,7 +11,7 @@ Communication::Communication() {}
 void Communication::init() {
   ackPinState = true;
   slowStructToTrans = CAPT_DATA;
-  medStructToTrans = PILOT_DATA;
+  medStructToTrans = NAV_DATA;
   fastStructToTrans = SENSOR_DATA;
   
   sensorDataA = (SensorData*)malloc(sizeof(SensorData));
@@ -212,9 +212,24 @@ void Communication::sendRadioData () {
   // Fast throttled transmit loop
   if (curTime - lastFastXmtTime > FAST_SERIAL_XMT_INTERVAL) {
     lastFastXmtTime = curTime;
-  
+
     // fast xmt data here
-    transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
+    switch(fastStructToTrans) {
+
+      case SENSOR_DATA:
+        transmitStruct(SENSOR_DATA, (byte*)sensorPtr, sizeof(SensorData));
+        fastStructToTrans = PILOT_DATA;
+        break;
+
+      case PILOT_DATA:
+        transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
+        fastStructToTrans = SENSOR_DATA;
+        break;
+  
+      default:
+        fastStructToTrans = SENSOR_DATA;
+        break;
+    }
   }
   
   // Medium throttled transmit loop
@@ -224,18 +239,18 @@ void Communication::sendRadioData () {
     // medium xmt data here
     switch(medStructToTrans) {
 
-      case PILOT_DATA:
-        transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
-        medStructToTrans = NAV_DATA;
-        break;
+//      case PILOT_DATA:
+//        transmitStruct(PILOT_DATA, (byte*)pilotPtr, sizeof(PilotData));
+//        medStructToTrans = NAV_DATA;
+//        break;
       
       case NAV_DATA:
         transmitStruct(NAV_DATA, (byte*)navPtr, sizeof(NavData));
-        medStructToTrans = PILOT_DATA;
+        medStructToTrans = NAV_DATA;
         break;
       
       default:
-        medStructToTrans = PILOT_DATA;
+        medStructToTrans = NAV_DATA;
         break;
     }
   }  
@@ -263,7 +278,6 @@ void Communication::sendRadioData () {
         break;
       
       default:
-        transmitStruct(CAPT_DATA, (byte*)captPtr, sizeof(CaptData));
         slowStructToTrans = CAPT_DATA;
         break;
     }
